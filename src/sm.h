@@ -27,6 +27,9 @@
 #define SBI_SM_GET_SEALING_KEY    3003
 #define SBI_SM_STOP_ENCLAVE       3004
 #define SBI_SM_EXIT_ENCLAVE       3006
+// chungmcl
+#define SBI_SM_PAUSE              3007
+// chungmcl
 #define FID_RANGE_ENCLAVE         3999
 /* 4000-4999 are experimental */
 #define SBI_SM_CALL_PLUGIN        4000

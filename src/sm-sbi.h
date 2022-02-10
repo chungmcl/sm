@@ -23,6 +23,11 @@ sbi_sm_exit_enclave(struct sbi_trap_regs *regs, unsigned long retval);
 unsigned long
 sbi_sm_stop_enclave(struct sbi_trap_regs *regs, unsigned long request);
 
+// chungmcl
+unsigned long
+sbi_sm_pause(struct sbi_trap_regs *regs);
+// chungmcl
+
 unsigned long
 sbi_sm_resume_enclave(struct sbi_trap_regs *regs, unsigned long eid);
 

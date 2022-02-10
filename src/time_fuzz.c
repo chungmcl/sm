@@ -3,7 +3,7 @@
 #include "enclave.h"
 #include "cpu.h"
 
-void fuzzy_func() {
+void wait_until_epoch() {
     enclave_id eid = cpu_get_enclave_id();
     struct enclave* enclave = get_enclave(eid);
     if (enclave->fuzzy_status == FUZZ_ENABLED) {

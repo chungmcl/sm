@@ -65,7 +65,6 @@ typedef enum {
 } time_fuzz_options;
 // chungmcl
 
-// chungmcl TODO: add property that says to fuzz time or not
 /* enclave metadata */
 struct enclave
 {
