@@ -96,7 +96,7 @@ unsigned long sbi_sm_get_time(struct sbi_trap_regs *regs)
   return get_time_ticks();
 }
 
-unsigned long sbi_sm_get_interval(struct sbi_trap_regs *regs)
+unsigned long sbi_sm_get_interval_len(struct sbi_trap_regs *regs)
 {
   return get_epoch_interval_len_ticks();
 }

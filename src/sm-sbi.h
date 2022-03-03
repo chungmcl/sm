@@ -31,7 +31,7 @@ unsigned long
 sbi_sm_get_time(struct sbi_trap_regs *regs);
 
 unsigned long
-sbi_sm_get_interval(struct sbi_trap_regs *regs);
+sbi_sm_get_interval_len(struct sbi_trap_regs *regs);
 // chungmcl
 
 unsigned long
