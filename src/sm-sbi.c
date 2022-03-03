@@ -90,6 +90,16 @@ unsigned long sbi_sm_pause(struct sbi_trap_regs *regs)
   wait_until_epoch();
   return 0;
 }
+
+unsigned long sbi_sm_get_time(struct sbi_trap_regs *regs)
+{
+  return get_time_ticks();
+}
+
+unsigned long sbi_sm_get_interval(struct sbi_trap_regs *regs)
+{
+  return get_epoch_interval_len_ticks();
+}
 // chungmcl
 
 unsigned long sbi_sm_attest_enclave(uintptr_t report, uintptr_t data, uintptr_t size)

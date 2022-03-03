@@ -29,6 +29,8 @@
 #define SBI_SM_EXIT_ENCLAVE       3006
 // chungmcl
 #define SBI_SM_PAUSE              3007
+#define SBI_SM_GET_TIME           3008
+#define SBI_SM_GET_INTERVAL_LEN   3009
 // chungmcl
 #define FID_RANGE_ENCLAVE         3999
 /* 4000-4999 are experimental */

@@ -26,6 +26,12 @@ sbi_sm_stop_enclave(struct sbi_trap_regs *regs, unsigned long request);
 // chungmcl
 unsigned long
 sbi_sm_pause(struct sbi_trap_regs *regs);
+
+unsigned long
+sbi_sm_get_time(struct sbi_trap_regs *regs);
+
+unsigned long
+sbi_sm_get_interval(struct sbi_trap_regs *regs);
 // chungmcl
 
 unsigned long
