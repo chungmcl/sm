@@ -27,9 +27,12 @@ sbi_sm_stop_enclave(struct sbi_trap_regs *regs, unsigned long request);
 unsigned long
 sbi_sm_pause(struct sbi_trap_regs *regs);
 
+// Gets the time as the current "interval,"
+// in terms of ticks
 unsigned long
 sbi_sm_get_time(struct sbi_trap_regs *regs);
 
+// Gets the length of an interval in terms of ticks
 unsigned long
 sbi_sm_get_interval_len(struct sbi_trap_regs *regs);
 // chungmcl
