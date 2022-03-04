@@ -94,7 +94,9 @@ unsigned long sbi_sm_pause(struct sbi_trap_regs *regs)
 unsigned long sbi_sm_get_time(struct sbi_trap_regs *regs)
 {
   unsigned long time = get_time_ticks();
-  return time - (time % get_epoch_interval_len_ticks());
+  return time;
+  // should switch to this
+  // return time - (time % get_epoch_interval_len_ticks());
 }
 
 unsigned long sbi_sm_get_interval_len(struct sbi_trap_regs *regs)

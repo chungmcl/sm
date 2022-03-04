@@ -25,5 +25,5 @@ unsigned long get_time_ticks() {
 unsigned long get_epoch_interval_len_ticks() {
   // For now, arbitrarily defining an interval as a 10 ms block
   const struct sbi_timer_device* device = sbi_timer_get_device();
-  return 1000 * device->timer_freq;
+  return 10 * (device->timer_freq / 1000);
 }
