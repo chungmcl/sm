@@ -91,6 +91,12 @@ unsigned long sbi_sm_pause(struct sbi_trap_regs *regs)
   return 0;
 }
 
+unsigned long sbi_sm_pause_ms(struct sbi_trap_regs *regs, unsigned long ms)
+{
+  wait_for_ms(ms);
+  return 0;
+}
+
 unsigned long sbi_sm_get_time(struct sbi_trap_regs *regs)
 {
   unsigned long time = get_time_ticks();

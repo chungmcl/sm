@@ -18,6 +18,10 @@ void wait_until_epoch() {
   sbi_timer_mdelay(10 - (msPassed % 10));
 }
 
+void wait_for_ms(unsigned long ms) {
+  sbi_timer_mdelay(ms);
+}
+
 unsigned long get_time_ticks() {
   return sbi_timer_value();
 }
