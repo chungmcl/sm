@@ -3,29 +3,35 @@
 #include "enclave.h"
 #include "cpu.h"
 
-// void fix_time_interval() {
-//   // back compute
-//   //
-//   // t_end == when the current tick ends
-//   // t_curr == real time clock: get_time_ticks()
-//   // fuzz_clock == current fuzzed time
-//   // g == granularity/interval max
-//   //
-//   // keep going until t_end is in the future
-//   while (t_end < get_time_ticks()) {
-//     fuzz_clock = truncate_based_on_g(t_end);
-//     // TODO: ENSURE UNIFORMLY RANDOM!
-//     t_end = t_end + rand(0, g);
-//   }
-// }
+uint64_t granularity_ticks;
+uint64_t t_end;
+uint64_t t_curr;
+uint64_t fuzz_clock;
+
+void fix_time_interval() {
+  // back compute
+  //
+  // t_end == when the current tick ends
+  // t_curr == real time clock: get_time_ticks()
+  // fuzz_clock == current fuzzed time
+  // g == granularity/interval max
+  //
+  // keep going until t_end is in the future
+  while (t_end < get_time_ticks()) {
+    fuzz_clock = t_end - (t_end % granularity_ticks);
+    // TODO: ENSURE UNIFORMLY RANDOM!
+    sbi_sm_random();
+    t_end += rand(0, g);
+  }
+}
 
 void wait_until_epoch() {
-  enclave_id eid = cpu_get_enclave_id();
-  struct enclave* enclave = get_enclave(eid);
-  if (enclave->fuzzy_status == FUZZ_ENABLED) {
-    // fix_time_interval();
-    // return fuzz_clock;
-  }
+  // enclave_id eid = cpu_get_enclave_id();
+  // struct enclave* enclave = get_enclave(eid);
+  // if (enclave->fuzzy_status == FUZZ_ENABLED) {
+  //   // fix_time_interval();
+  //   // return fuzz_clock;
+  // }
   
   // TODO(chungmcl): put this inside if statement later -- force pause
   // on everything for now for debugging
