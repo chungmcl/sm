@@ -30,8 +30,7 @@ sbi_sm_pause(struct sbi_trap_regs *regs);
 unsigned long
 sbi_sm_pause_ms(struct sbi_trap_regs *regs, unsigned long ms);
 
-// Gets the time as the current "interval,"
-// in terms of ticks
+// Gets time in ticks
 unsigned long
 sbi_sm_get_time(struct sbi_trap_regs *regs);
 

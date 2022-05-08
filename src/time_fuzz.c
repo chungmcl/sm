@@ -3,42 +3,32 @@
 #include "enclave.h"
 #include "cpu.h"
 
-uint64_t granularity_ticks;
-uint64_t t_end;
-uint64_t t_curr;
-uint64_t fuzz_clock;
+#define GRANULARITY_MS 10
+
+unsigned long t_end_ticks = 0;
+unsigned long fuzz_clock_ticks;
 
 void fix_time_interval() {
   // back compute
   //
-  // t_end == when the current tick ends
-  // t_curr == real time clock: get_time_ticks()
-  // fuzz_clock == current fuzzed time
+  // t_end_ticks == when the current tick ends
+  // fuzz_clock_ticks == current fuzzed time
   // g == granularity/interval max
   //
   // keep going until t_end is in the future
-  while (t_end < get_time_ticks()) {
-    fuzz_clock = t_end - (t_end % granularity_ticks);
-    // TODO: ENSURE UNIFORMLY RANDOM!
-    sbi_sm_random();
-    t_end += rand(0, g);
+  while (t_end_ticks < sbi_timer_value()) {
+    fuzz_clock_ticks = t_end_ticks - (t_end_ticks % get_granularity_ticks());
+    // TODO: ENSURE UNIFORMLY RANDOM! IT ISN'T RIGHT NOW!
+    t_end_ticks += sbi_sm_random() % (get_granularity_ticks() + 1);
   }
 }
 
 void wait_until_epoch() {
-  // enclave_id eid = cpu_get_enclave_id();
-  // struct enclave* enclave = get_enclave(eid);
-  // if (enclave->fuzzy_status == FUZZ_ENABLED) {
-  //   // fix_time_interval();
-  //   // return fuzz_clock;
-  // }
-  
-  // TODO(chungmcl): put this inside if statement later -- force pause
-  // on everything for now for debugging
-  const struct sbi_timer_device* device = sbi_timer_get_device();
-  unsigned long long msPassed = (sbi_timer_value() / device->timer_freq) * 1000;
-  // pause until next 10 ms block
-  sbi_timer_mdelay(10 - (msPassed % 10));
+  fix_time_interval();
+  // ticks / (ticks / second) = seconds
+  // seconds * 1000 = milliseconds
+  unsigned long delta_ticks = t_end_ticks - fuzz_clock_ticks;
+  sbi_timer_mdelay((delta_ticks / sbi_timer_get_device()->timer_freq) * 1000);
 }
 
 void wait_for_ms(unsigned long ms) {
@@ -46,11 +36,16 @@ void wait_for_ms(unsigned long ms) {
 }
 
 unsigned long get_time_ticks() {
-  return sbi_timer_value();
+  /*enclave_id eid = cpu_get_enclave_id();
+  struct enclave* enclave = get_enclave(eid);
+  if (enclave->fuzzy_status == FUZZ_ENABLED)*/ {
+    fix_time_interval();
+    return fuzz_clock_ticks;
+  }
 }
 
-unsigned long get_epoch_interval_len_ticks() {
-  // For now, arbitrarily defining an interval as a 10 ms block
-  const struct sbi_timer_device* device = sbi_timer_get_device();
-  return 10 * (device->timer_freq / 1000);
+unsigned long get_granularity_ticks() {
+  // (ticks / second) * (seconds / milliseconds) = (ticks / milliseconds)
+  // milliseconds * (ticks / milliseconds) = ticks
+  return GRANULARITY_MS * (sbi_timer_get_device()->timer_freq / 1000);
 }

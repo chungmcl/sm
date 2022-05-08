@@ -9,14 +9,9 @@
 #include "cpu.h"
 #include "platform-hook.h"
 #include "plugins/plugins.h"
+#include "time_fuzz.h"
 #include <sbi/riscv_asm.h>
 #include <sbi/sbi_console.h>
-
-// chungmcl: include fuzz code .h file
-#include "time_fuzz.h"
-// chungmcl
-
-
 
 unsigned long sbi_sm_create_enclave(unsigned long* eid, uintptr_t create_args)
 {
@@ -63,7 +58,7 @@ unsigned long sbi_sm_exit_enclave(struct sbi_trap_regs *regs, unsigned long retv
 {
   // chungmcl
   // TEMPORARILY COMMENTING OUT!
-  //wait_until_epoch();
+  // wait_until_epoch();
   // chungmcl
   regs->a0 = exit_enclave(regs, cpu_get_enclave_id());
   regs->a1 = retval;
@@ -76,7 +71,7 @@ unsigned long sbi_sm_stop_enclave(struct sbi_trap_regs *regs, unsigned long requ
 {
   // chungmcl
   // TEMPORARILY COMMENTING OUT!
-  //wait_until_epoch();
+  // wait_until_epoch();
   // chungmcl
   regs->a0 = stop_enclave(regs, request, cpu_get_enclave_id());
   regs->mepc += 4;
@@ -101,13 +96,11 @@ unsigned long sbi_sm_get_time(struct sbi_trap_regs *regs)
 {
   unsigned long time = get_time_ticks();
   return time;
-  // should switch to this
-  // return time - (time % get_epoch_interval_len_ticks());
 }
 
 unsigned long sbi_sm_get_interval_len(struct sbi_trap_regs *regs)
 {
-  return get_epoch_interval_len_ticks();
+  return get_granularity_ticks();
 }
 // chungmcl
 
