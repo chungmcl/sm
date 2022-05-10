@@ -24,11 +24,19 @@ void fix_time_interval() {
 }
 
 void wait_until_epoch() {
-  fix_time_interval();
   // ticks / (ticks / second) = seconds
   // seconds * 1000 = milliseconds
-  unsigned long delta_ticks = t_end_ticks - fuzz_clock_ticks;
-  sbi_timer_mdelay((delta_ticks / sbi_timer_get_device()->timer_freq) * 1000);
+  // unsigned long delta_ticks = t_end_ticks - fuzz_clock_ticks;
+  // sbi_timer_mdelay((delta_ticks / sbi_timer_get_device()->timer_freq) * 1000);
+
+  unsigned long start_fuzz_ticks = fuzz_clock_ticks;
+  while (start_fuzz_ticks == fuzz_clock_ticks) {
+    unsigned long delta_ticks = t_end_ticks - sbi_timer_value();
+    // ticks / (ticks / second) = seconds
+    // seconds * 1000 = milliseconds
+    sbi_timer_mdelay((delta_ticks / sbi_timer_get_device()->timer_freq) * 1000);
+    fix_time_interval();
+  }
 }
 
 void wait_for_ms(unsigned long ms) {
