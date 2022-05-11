@@ -35,7 +35,6 @@ void fix_time_interval(unsigned long t) {
   while (t_end_ticks < t) {
     fuzz_clock_ticks = t_end_ticks - (t_end_ticks % granularity_ticks);
     // TODO: ENSURE UNIFORMLY RANDOM! IT ISN'T RIGHT NOW!
-    // get_gran.. might be too slow
     unsigned long rand = sbi_sm_random();
     // sbi_printf("sbi_sm_random: %lu\n", rand);
     unsigned long to_add = rand % (granularity_ticks + 1);
@@ -45,19 +44,12 @@ void fix_time_interval(unsigned long t) {
 }
 
 void wait_until_epoch() {
-  // ticks / (ticks / second) = seconds
-  // seconds * 1000 = milliseconds
-  // unsigned long delta_ticks = t_end_ticks - fuzz_clock_ticks;
-  // sbi_timer_mdelay((delta_ticks / sbi_timer_get_device()->timer_freq) * 1000);
-
   unsigned long start_fuzz_ticks = fuzz_clock_ticks;
   while (start_fuzz_ticks == fuzz_clock_ticks) {
     // sbi_printf("start_fuzz_ticks: %lu\n", start_fuzz_ticks);
     // sbi_printf("fuzz_clock_ticks: %lu\n", fuzz_clock_ticks);
     unsigned long t = sbi_timer_value();
     unsigned long delta_ticks = t_end_ticks - t;
-    // ticks / (ticks / second) = seconds
-    // seconds * 1000 = milliseconds
     // ticks / (ticks / milliseconds) = milliseconds
     unsigned long delay_ms = delta_ticks / ticks_per_ms;
     if (t < t_end_ticks) {
