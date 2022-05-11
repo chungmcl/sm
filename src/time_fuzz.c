@@ -2,11 +2,22 @@
 #include "time_fuzz.h"
 #include "enclave.h"
 #include "cpu.h"
+#include <sbi/sbi_console.h> // for sbi_printf() for debugging
 
 #define GRANULARITY_MS 10
 
 unsigned long t_end_ticks = 0;
 unsigned long fuzz_clock_ticks;
+unsigned long granularity_ticks;
+unsigned long ticks_per_ms;
+
+void fuzzy_time_init() {
+  // (ticks / second) * (seconds / milliseconds) = (ticks / milliseconds)
+  ticks_per_ms = sbi_timer_get_device()->timer_freq / 1000;
+  // milliseconds * (ticks / milliseconds) = ticks
+  granularity_ticks = GRANULARITY_MS * ticks_per_ms;
+  t_end_ticks = sbi_timer_value() - (sbi_timer_value() % granularity_ticks);
+}
 
 void fix_time_interval() {
   // back compute
@@ -16,10 +27,19 @@ void fix_time_interval() {
   // g == granularity/interval max
   //
   // keep going until t_end is in the future
+
+  // may need to have safety mechanism to check for verrrry long gaps
+  // between real_time and t_end_ticks? and skip this process
+  // print with sbi_printf("");
   while (t_end_ticks < sbi_timer_value()) {
-    fuzz_clock_ticks = t_end_ticks - (t_end_ticks % get_granularity_ticks());
+    fuzz_clock_ticks = t_end_ticks - (t_end_ticks % granularity_ticks);
     // TODO: ENSURE UNIFORMLY RANDOM! IT ISN'T RIGHT NOW!
-    t_end_ticks += sbi_sm_random() % (get_granularity_ticks() + 1);
+    // get_gran.. might be too slow
+    unsigned long rand = sbi_sm_random();
+    sbi_printf("sbi_sm_random: %lu\n", rand);
+    unsigned long to_add = rand % (granularity_ticks + 1);
+    t_end_ticks += to_add;
+    sbi_printf("t_end_ticks += %lu\n", to_add);
   }
 }
 
@@ -31,10 +51,16 @@ void wait_until_epoch() {
 
   unsigned long start_fuzz_ticks = fuzz_clock_ticks;
   while (start_fuzz_ticks == fuzz_clock_ticks) {
+    // sbi_printf("start_fuzz_ticks: %lu\n", start_fuzz_ticks);
+    // sbi_printf("fuzz_clock_ticks: %lu\n", fuzz_clock_ticks);
     unsigned long delta_ticks = t_end_ticks - sbi_timer_value();
     // ticks / (ticks / second) = seconds
     // seconds * 1000 = milliseconds
-    sbi_timer_mdelay((delta_ticks / sbi_timer_get_device()->timer_freq) * 1000);
+    // ticks / (ticks / milliseconds) = milliseconds
+    unsigned long delay_ms = delta_ticks / ticks_per_ms;
+
+    sbi_printf("ms delay: %lu\n", delay_ms);
+    sbi_timer_mdelay(delay_ms);
     fix_time_interval();
   }
 }
@@ -53,7 +79,5 @@ unsigned long get_time_ticks() {
 }
 
 unsigned long get_granularity_ticks() {
-  // (ticks / second) * (seconds / milliseconds) = (ticks / milliseconds)
-  // milliseconds * (ticks / milliseconds) = ticks
-  return GRANULARITY_MS * (sbi_timer_get_device()->timer_freq / 1000);
+  return granularity_ticks;
 }

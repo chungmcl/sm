@@ -57,8 +57,7 @@ unsigned long sbi_sm_resume_enclave(struct sbi_trap_regs *regs, unsigned long ei
 unsigned long sbi_sm_exit_enclave(struct sbi_trap_regs *regs, unsigned long retval)
 {
   // chungmcl
-  // TEMPORARILY COMMENTING OUT!
-  // wait_until_epoch();
+  wait_until_epoch();
   // chungmcl
   regs->a0 = exit_enclave(regs, cpu_get_enclave_id());
   regs->a1 = retval;
@@ -70,8 +69,8 @@ unsigned long sbi_sm_exit_enclave(struct sbi_trap_regs *regs, unsigned long retv
 unsigned long sbi_sm_stop_enclave(struct sbi_trap_regs *regs, unsigned long request)
 {
   // chungmcl
-  // TEMPORARILY COMMENTING OUT!
-  // wait_until_epoch();
+  // Infinitely looping...
+  wait_until_epoch();
   // chungmcl
   regs->a0 = stop_enclave(regs, request, cpu_get_enclave_id());
   regs->mepc += 4;
