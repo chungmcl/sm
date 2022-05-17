@@ -43,7 +43,7 @@ void fix_time_interval(unsigned long t) {
   }
 }
 
-void wait_until_epoch() {
+unsigned long wait_until_epoch() {
   unsigned long start_fuzz_ticks = fuzz_clock_ticks;
   while (start_fuzz_ticks == fuzz_clock_ticks) {
     // sbi_printf("start_fuzz_ticks: %lu\n", start_fuzz_ticks);
@@ -58,6 +58,7 @@ void wait_until_epoch() {
     }
     fix_time_interval(t);
   }
+  return fuzz_clock_ticks;
 }
 
 void wait_for_ms(unsigned long ms) {
