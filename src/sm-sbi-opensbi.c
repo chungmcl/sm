@@ -14,11 +14,15 @@
 #include "sm.h"
 #include "cpu.h"
 
+// TODO(chungmcl): For debugging with sbi_timer(); remove when done
+#include <sbi/sbi_timer.h>
+
 static int sbi_ecall_keystone_enclave_handler(unsigned long extid, unsigned long funcid,
                      const struct sbi_trap_regs *regs,
                      unsigned long *out_val,
                      struct sbi_trap_info *out_trap)
 {
+  sbi_printf("SM Handler Called @ %lu.\n", sbi_timer_value());
   uintptr_t retval;
 
   if (funcid <= FID_RANGE_DEPRECATED) { return SBI_ERR_SM_DEPRECATED; }

@@ -13,6 +13,9 @@
 #include <sbi/riscv_asm.h>
 #include <sbi/sbi_console.h>
 
+// TODO(chungmcl): For debugging with sbi_timer(); remove when done
+#include <sbi/sbi_timer.h>
+
 unsigned long sbi_sm_create_enclave(unsigned long* eid, uintptr_t create_args)
 {
   struct keystone_sbi_create create_args_local;
@@ -56,6 +59,7 @@ unsigned long sbi_sm_resume_enclave(struct sbi_trap_regs *regs, unsigned long ei
 
 unsigned long sbi_sm_exit_enclave(struct sbi_trap_regs *regs, unsigned long retval)
 {
+  sbi_printf("SM Exited @ %lu.\n", sbi_timer_value());
   // chungmcl
   wait_until_epoch();
   // chungmcl
@@ -68,8 +72,8 @@ unsigned long sbi_sm_exit_enclave(struct sbi_trap_regs *regs, unsigned long retv
 
 unsigned long sbi_sm_stop_enclave(struct sbi_trap_regs *regs, unsigned long request)
 {
+  sbi_printf("SM Stopped @ %lu.\n", sbi_timer_value());
   // chungmcl
-  // Infinitely looping...
   wait_until_epoch();
   // chungmcl
   regs->a0 = stop_enclave(regs, request, cpu_get_enclave_id());
@@ -81,6 +85,7 @@ unsigned long sbi_sm_stop_enclave(struct sbi_trap_regs *regs, unsigned long requ
 // chungmcl
 unsigned long sbi_sm_pause(struct sbi_trap_regs *regs) 
 {
+  sbi_printf("SM Paused @ %lu.\n", sbi_timer_value());
   return wait_until_epoch();
 }
 
