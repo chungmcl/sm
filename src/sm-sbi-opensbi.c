@@ -22,6 +22,9 @@ static int sbi_ecall_keystone_enclave_handler(unsigned long extid, unsigned long
                      unsigned long *out_val,
                      struct sbi_trap_info *out_trap)
 {
+  // TODO(chungmcl): Remove! For debugging by preventing contact switches
+  // csr_clear(???, ???); // see sbi_ipi.c for examples
+
   sbi_printf("SM Handler Called @ %lu.\n", sbi_timer_value());
   uintptr_t retval;
 
