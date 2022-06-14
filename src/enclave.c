@@ -90,6 +90,9 @@ static inline void context_switch_to_enclave(struct sbi_trap_regs* regs,
     }
   }
 
+  // TODO(chungmcl)
+  csr_clear(CSR_MIE, MIP_MTIP);
+
   // Setup any platform specific defenses
   platform_switch_to_enclave(&(enclaves[eid]));
   cpu_enter_enclave_context(eid);
